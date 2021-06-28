@@ -1,0 +1,13 @@
+[ general ]
+	- options
+		- host
+		- open
+		? static
+[ content ]
+	- expose to network
+	- markdown
+	- folders
+[ bugs ]
+[ misc ]
+	? wsPort
+	- testing
