@@ -1,7 +1,7 @@
 {
 	"name": "@m4rch/sv",
-	"version": "0.1.0",
-	"description": "a simple file server with added live reload functionality",
+	"version": "0.1.1",
+	"description": "a simple file server with added live-reload functionality",
 	"keywords": [
 		"m4rch",
 		"serve",
@@ -10,13 +10,16 @@
 	"license": "Unlicense",
 	"author": "m4rch",
 	"type": "module",
+	"exports": {
+		"./": "./src/index.js",
+		"./handler": "./bin/handler.js"
+	},
 	"main": "src/index.js",
 	"bin": {
 		"@m4rch/sv": "bin/sv.js",
 		"sv": "bin/sv.js"
 	},
 	"dependencies": {
-		"@lukeed/uuid": "^2.0.0",
 		"cheap-watch": "^1.0.3",
 		"get-port": "^5.1.1",
 		"kleur": "^4.1.4",

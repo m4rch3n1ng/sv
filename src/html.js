@@ -1,20 +1,14 @@
 import mime from "mime/lite.js"
 import { join } from "path"
+import { scripts, styles } from "./extra.js"
 import { routes, get } from "./routes.js"
-import { port as wsPort } from "./livereload.js"
 import { toHeaders } from "./utils.js"
 
-export default async function html ( dir, path ) {
-	if (!routes.has(path)) {
+export default async function html ({ dir, path, wsPort }) {
+	// hacky workaround, opened an issue on cheap-watch
+	if (!routes.has(path) || path == "/") {
 		const is = await get(dir, path.slice(1))
-		if (!is) {
-			// TODO
-			return {
-				code: 404,
-				content: "",
-				headers: {}
-			}
-		}
+		if (!is) return { code: 404 }
 	}
 
 	const { directory, ...stuff } = routes.get(path)
@@ -24,11 +18,13 @@ export default async function html ( dir, path ) {
 		const index = children.filter(({ directory }) => !directory).find(({ path }) => path == "index.html" || path == "index.htm")
 		if (index) return html(dir, join(path, index.path).replace(/\\/g, "/"))
 
-		// TODO
+		const content = doDirectory({ children, path, wsPort })
+		const headers = toHeaders({ content, type: "text/html" })
+
 		return {
 			code: 200,
-			content: "",
-			headers: {}
+			content,
+			headers
 		}
 	} else {
 		let { content } = stuff
@@ -36,7 +32,7 @@ export default async function html ( dir, path ) {
 
 		switch (type) {
 			case "text/html": {
-				content = livereload(content)
+				content = livereload({ content, wsPort })
 				const headers = toHeaders({ content, type })
 
 				return {
@@ -58,16 +54,28 @@ export default async function html ( dir, path ) {
 	}
 }
 
-function livereload ( html ) {
-	let script = Buffer.from([
-		"<script>",
-		"\t(function () {",
-		`\t\tconst ws = new WebSocket(\"ws://localhost:${wsPort}\");`,
-		"\t\tws.addEventListener(\"message\", ({ data }) => data == \"reload\" && location.reload())",
-		"\t}())",
-		"</script>",
-		""
-	].join("\n"))
+function livereload ({ content, wsPort }) {
+	const script = Buffer.from(scripts.livereload(wsPort))
+	return Buffer.concat([ content, script ])
+}
 
-	return Buffer.concat([ html, script ])
+function doDirectory ({ children, path: p, wsPort }) {
+	const links = children.map(({ path, directory }) => `<a href="${encodeURI(`/${p}/${path}`.replace(/\/+/, "/"))}">${path}${directory ? "/" : ""}</a>`)
+
+	return Buffer.from([
+		"<!DOCTYPE html>",
+		"<html>",
+		"<head>",
+		`<title>${p}</title>`,
+		scripts.livereload(wsPort),
+		styles.directory,
+		"</head>",
+		"<body>",
+		"<div class=\"main\">",
+			`<div class="folder">.${p}</div>`,
+			links.join("\n"),
+		"</div>",
+		"</body>",
+		"</html>"
+	].join(""))
 }

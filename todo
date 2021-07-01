@@ -1,13 +1,11 @@
 [ general ]
 	- options
 		- host
-		- open
-		? static
+		- static
 [ content ]
-	- expose to network
 	- markdown
-	- folders
 [ bugs ]
 [ misc ]
-	? wsPort
-	- testing
+	- beautify folder display
+	- add symbols to directory view
+	- maybe replace kleur ?

@@ -1,9 +1,11 @@
 import colors from "kleur"
+import { exec } from "child_process"
+import { randomBytes } from "crypto"
 
 export function parse ({ url }) {
 	if (!url) return {}
 
-	const [ path ] = url.split("?")
+	const [ path ] = decodeURI(url).split("?")
 	return {
 		raw: url,
 		path: path.length > 1 && path.endsWith("/") ? path.slice(0, -1) : path
@@ -33,4 +35,20 @@ export function log ({ code, path }) {
 	const fn = code >= 400 ? "red" : code > 300 ? "yellow" : "green"
 
 	console.log(`  [${date}] ${colors[fn](code)} - ${path}`)
+}
+
+export function launch ( port ) {
+	const url = `http://localhost:${port}`
+
+	if (process.platform == "win32") {
+		exec(`start ${url}`)
+	} else if (process.platform == "linux") {
+		exec(`xdg-open ${url}`)
+	} else if (process.platform == "darwin") {
+		exec(`open ${url}`)
+	}
+}
+
+export function random () {
+	return randomBytes(16).toString("hex")
 }
