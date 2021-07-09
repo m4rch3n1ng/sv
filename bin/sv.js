@@ -4,7 +4,7 @@ import sade from "sade"
 import handler from "./handler.js"
 
 sade("sv [dir]")
-	.version("v0.1.1")
+	.version("v0.1.3")
 	.describe("quickly serve and live-reload a folder for development.")
 	.option("-p, --port", "specify the port", 4000)
 	.option("-o, --open", "open the website in a browser")

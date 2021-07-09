@@ -1,5 +1,16 @@
 # @m4rch/sv
 
+## v0.1.3
+
+*2021-07-10*
+
+- fixed breaking bug in static mode
+
+***
+
+- updated version for cli
+- added comment to injected live-reload code
+
 ## v0.1.2
 
 *2021-07-09*

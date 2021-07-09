@@ -38,7 +38,7 @@ export function watch ( dir ) {
 	})
 }
 
-export async function get ( dir, file ) {
+export async function get ( dir, file, a ) {
 	const path = join(dir, file)
 	if (!existsSync(path)) return false
 
@@ -54,24 +54,24 @@ export async function get ( dir, file ) {
 		routes.set(`/${file}`, { directory: true, children })
 	} else {
 		const content = await readFile(path)
+
 		routes.set(`/${file}`, { directory: false, content })
 	}
 
 	return true
 }
 
-export async function recurse ( dir, route = "" ) {
-	const children = await readdir(dir)
-	get(dir, route)
+export async function recurse ( dir, route = [] ) {
+	get(dir, route.join("/"))
 
+	const children = await readdir(join(dir, route.join("/")))
 	children.forEach(async ( file ) => {
-		const path = join(dir, file)
-		const stats = await lstat(path)
+		const stats = await lstat(join(dir, route.join("/"), file))
 
 		if (stats.isDirectory()) {
-			recurse(path, route.split(/\/+/g).concat(file).join("/"))
+			recurse(dir, route.concat(file))
 		} else {
-			get(dir, `${route}/${file}`)
+			get(dir, route.concat(file).join("/"), true)
 		}
 	})
 }

@@ -1,6 +1,7 @@
 export const scripts = {
 	livereload: ( wsPort ) => [
 		"<script>",
+		"\t/* code injected by sv for live-reload purposes */",
 		"\t(function () {",
 		`\t\tconst ws = new WebSocket(\"ws://localhost:${wsPort}\")`,
 		"\t\tws.addEventListener(\"message\", ({ data }) => data == \"reload\" && location.reload())",
