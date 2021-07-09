@@ -1,6 +1,6 @@
 {
 	"name": "@m4rch/sv",
-	"version": "0.1.1",
+	"version": "0.1.2",
 	"description": "a simple file server with added live-reload functionality",
 	"keywords": [
 		"m4rch",
