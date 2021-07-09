@@ -4,8 +4,11 @@
 		- static
 [ content ]
 	- markdown
+	- metadata directories
+	- add symbols to directory view
 [ bugs ]
 [ misc ]
-	- beautify folder display
-	- add symbols to directory view
+	- option to always show folder instead of the index.html
+	- consistent naming
+	- readme: handler
 	- maybe replace kleur ?

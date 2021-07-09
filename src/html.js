@@ -1,14 +1,15 @@
 import mime from "mime/lite.js"
-import { join } from "path"
 import { scripts, styles } from "./extra.js"
 import { routes, get } from "./routes.js"
 import { toHeaders } from "./utils.js"
 
-export default async function html ({ dir, path, wsPort }) {
+export default async function html ({ dir, path, wsPort, statik }) {
 	// hacky workaround, opened an issue on cheap-watch
-	if (!routes.has(path) || path == "/") {
+	if (!statik && (!routes.has(path) || path == "/")) {
 		const is = await get(dir, path.slice(1))
 		if (!is) return { code: 404 }
+	} else if (statik && !routes.has(path)) {
+		return { code: 404 }
 	}
 
 	const { directory, ...stuff } = routes.get(path)
@@ -16,7 +17,7 @@ export default async function html ({ dir, path, wsPort }) {
 		const { children } = stuff
 
 		const index = children.filter(({ directory }) => !directory).find(({ path }) => path == "index.html" || path == "index.htm")
-		if (index) return html(dir, join(path, index.path).replace(/\\/g, "/"))
+		if (index) return html({ dir, path: `${path}/${index.path}`.replace(/\/{2,}/g, "/"), wsPort, statik })
 
 		const content = doDirectory({ children, path, wsPort })
 		const headers = toHeaders({ content, type: "text/html" })
@@ -32,7 +33,7 @@ export default async function html ({ dir, path, wsPort }) {
 
 		switch (type) {
 			case "text/html": {
-				content = livereload({ content, wsPort })
+				if (!statik) content = livereload({ content, wsPort })
 				const headers = toHeaders({ content, type })
 
 				return {
@@ -59,21 +60,27 @@ function livereload ({ content, wsPort }) {
 	return Buffer.concat([ content, script ])
 }
 
-function doDirectory ({ children, path: p, wsPort }) {
-	const links = children.map(({ path, directory }) => `<a href="${encodeURI(`/${p}/${path}`.replace(/\/+/, "/"))}">${path}${directory ? "/" : ""}</a>`)
+function doDirectory ({ children, path, wsPort }) {
+	const dir = path.slice(1).split(/\/+/g).filter(( dir ) => !!dir.length).map(( dir, i, pre ) => ({ name: dir, link: `/${pre.slice(0, i + 1).join("/")}` }))
+	const links = children.map(({ path: p, directory }) => `<a href="${encodeURI(`/${path}/${p}`.replace(/\/+/g, "/"))}">${p}${directory ? "/" : ""}</a>`)
 
 	return Buffer.from([
 		"<!DOCTYPE html>",
 		"<html>",
 		"<head>",
-		`<title>${p}</title>`,
-		scripts.livereload(wsPort),
-		styles.directory,
+			`<title>${dir[dir.length - 1] && dir[dir.length - 1].name || "/"}</title>`,
+			scripts.livereload(wsPort),
+			styles.directory,
 		"</head>",
 		"<body>",
 		"<div class=\"main\">",
-			`<div class="folder">.${p}</div>`,
-			links.join("\n"),
+			"<div class=\"name\">",
+				"<a href=\"/\">./</a>",
+				dir.map(({ name, link }) => `<a href="${link}">${name}/</a>`).join(""),
+			"</div>",
+			"<div class=\"entries\">",
+				links.join("\n"),
+			"</div>",
 		"</div>",
 		"</body>",
 		"</html>"

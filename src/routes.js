@@ -12,40 +12,66 @@ export function watch ( dir ) {
 
 	watcher.on("+", async ({ path, stats }) => {
 		const file = join(dir, path)
-		update()
 
 		if (stats.isDirectory()) {
 			let children = await readdir(file)
-			children = await Promise.all(
-				children.map(async ( path ) => ({ path, directory: (await lstat(join(file, path))).isDirectory() }))
-			)
+			children = (await Promise.all(
+				children
+					.sort(( el1, el2 ) => el1.toLowerCase().localeCompare(el2.toLowerCase()))
+					.map(async ( path ) => ({ path, directory: (await lstat(join(file, path))).isDirectory() })).sort(( el1, el2 ) => el2.directory - el1.directory)
+			)).sort(( el1, el2 ) => el2.directory - el1.directory)
 
 			routes.set(`/${path}`, { directory: true, children })
 		} else {
 			const content = await readFile(file)
 			routes.set(`/${path}`, { directory: false, content })
 		}
+
+		update()
 	})
 
-	watcher.on("-", ({ path }) => routes.has(`/${path}`) && routes.delete(`/${path}`))
+	watcher.on("-", ({ path }) => {
+		if (routes.has(`/${path}`)) {
+			routes.delete(`/${path}`)
+			update()
+		}
+	})
 }
 
-export async function get ( dir, sub ) {
-	const path = join(dir, sub)
+export async function get ( dir, file ) {
+	const path = join(dir, file)
 	if (!existsSync(path)) return false
 
 	const stats = await lstat(path)
 	if (stats.isDirectory()) {
 		let children = await readdir(path)
-		children = await Promise.all(
-			children.map(async ( p ) => ({ path: p, directory: (await lstat(join(path, p))).isDirectory() }))
-		)
+		children = (await Promise.all(
+			children
+				.sort(( el1, el2 ) => el1.toLowerCase().localeCompare(el2.toLowerCase()))
+				.map(async ( p ) => ({ path: p, directory: (await lstat(join(path, p))).isDirectory() }))
+		)).sort(( el1, el2 ) => el2.directory - el1.directory)
 
-		routes.set(`/${sub}`, { directory: true, children })
+		routes.set(`/${file}`, { directory: true, children })
 	} else {
 		const content = await readFile(path)
-		routes.set(`/${sub}`, { directory: false, content })
+		routes.set(`/${file}`, { directory: false, content })
 	}
 
 	return true
+}
+
+export async function recurse ( dir, route = "" ) {
+	const children = await readdir(dir)
+	get(dir, route)
+
+	children.forEach(async ( file ) => {
+		const path = join(dir, file)
+		const stats = await lstat(path)
+
+		if (stats.isDirectory()) {
+			recurse(path, route.split(/\/+/g).concat(file).join("/"))
+		} else {
+			get(dir, `${route}/${file}`)
+		}
+	})
 }

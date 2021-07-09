@@ -1,5 +1,26 @@
 # @m4rch/sv
 
+## v0.1.2
+
+*2021-07-09*
+
+- added static mode (--static flag)
+- sorted files while serving directory
+
+***
+
+- fixed bug when serving at directory with an index.html
+- fixed bug not reloading when file removed
+- fixed import error (package.json)
+- fixed potential bug with the coloring
+
+***
+
+- improved directory design while serving directory
+- sorted files while displaying directories
+- improved readme
+- added default values for sade
+
 ## v0.1.1
 
 *2021-07-01*

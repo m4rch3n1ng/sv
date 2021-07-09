@@ -11,7 +11,7 @@
 	"author": "m4rch",
 	"type": "module",
 	"exports": {
-		"./": "./src/index.js",
+		".": "./src/index.js",
 		"./handler": "./bin/handler.js"
 	},
 	"main": "src/index.js",
@@ -25,6 +25,6 @@
 		"kleur": "^4.1.4",
 		"mime": "^2.5.2",
 		"sade": "^1.7.4",
-		"ws": "^7.5.0"
+		"ws": "^7.5.2"
 	}
 }

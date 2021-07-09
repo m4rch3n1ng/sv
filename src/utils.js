@@ -3,8 +3,6 @@ import { exec } from "child_process"
 import { randomBytes } from "crypto"
 
 export function parse ({ url }) {
-	if (!url) return {}
-
 	const [ path ] = decodeURI(url).split("?")
 	return {
 		raw: url,
@@ -31,7 +29,7 @@ export function toHeaders ({ type, content }) {
 }
 
 export function log ({ code, path }) {
-	const date = colors.magenta(new Date().toISOString().split(/[T\.]/)[1])
+	const date = colors.magenta(new Date().toISOString().split(/[T\.]/g)[1])
 	const fn = code >= 400 ? "red" : code > 300 ? "yellow" : "green"
 
 	console.log(`  [${date}] ${colors[fn](code)} - ${path}`)
