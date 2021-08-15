@@ -1,5 +1,17 @@
 # @m4rch/sv
 
+## v0.1.4
+
+*2021-08-15*
+
+- added --list-dir / -d option
+
+***
+
+- added repository to package.json
+- fixed time zone offset in logs
+- bumped ws version
+
 ## v0.1.3
 
 *2021-07-10*

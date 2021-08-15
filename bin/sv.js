@@ -4,12 +4,13 @@ import sade from "sade"
 import handler from "./handler.js"
 
 sade("sv [dir]")
-	.version("v0.1.3")
+	.version("v0.1.4")
 	.describe("quickly serve and live-reload a folder for development.")
 	.option("-p, --port", "specify the port", 4000)
 	.option("-o, --open", "open the website in a browser")
 	.option("-s, --static", "disable live-reloading and content updates")
+	.option("-d, --list-dir", "always list directories")
 	.example("dist")
 	.example("-p 5000")
 	.action(handler)
-	.parse(process.argv, { default: { static: false, open: false }})
+	.parse(process.argv, { default: { static: false, open: false, d: false }})

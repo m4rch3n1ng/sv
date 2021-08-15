@@ -8,7 +8,6 @@ this is a package for file-serving with automatically added live-reload function
 
 ```
 $ sv -h
-
   Description
     quickly serve and live-reload a folder for development.
 
@@ -16,11 +15,12 @@ $ sv -h
     $ sv [dir] [options]
 
   Options
-    -p, --port       specify the port  (default 4000)
-    -o, --open       open the website in a browser
-    -s, --static     do not live reload or update contents
-    -v, --version    Displays current version
-    -h, --help       Displays this message
+    -p, --port        specify the port  (default 4000)
+    -o, --open        open the website in a browser
+    -s, --static      disable live-reloading and content updates
+    -d, --list-dir    always list directories
+    -v, --version     Displays current version
+    -h, --help        Displays this message
 
   Examples
     $ sv dist
@@ -42,7 +42,8 @@ interface options {
 	dir: string // the directory you want to serve
 	port: number // the port of the wished service
 	wsPort: number // the port of the live-reload socket
-	static?: boolean // whether or not to live-reload
+	static?: boolean // whether or not to live-reload,
+	listDir?: boolean // whether or not to always list directories
 }
 ```
 

@@ -29,7 +29,7 @@ export function toHeaders ({ type, content }) {
 }
 
 export function log ({ code, path }) {
-	const date = colors.magenta(new Date().toISOString().split(/[T\.]/g)[1])
+	const date = colors.magenta(new Date(Date.now() - new Date().getTimezoneOffset() * 60_000).toISOString().split(/[T\.]/g)[1])
 	const fn = code >= 400 ? "red" : code > 300 ? "yellow" : "green"
 
 	console.log(`  [${date}] ${colors[fn](code)} - ${path}`)

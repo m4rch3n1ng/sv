@@ -3,7 +3,7 @@ import { scripts, styles } from "./extra.js"
 import { routes, get } from "./routes.js"
 import { toHeaders } from "./utils.js"
 
-export default async function html ({ dir, path, wsPort, statik }) {
+export default async function html ({ dir, path, wsPort, statik, listDir }) {
 	// hacky workaround, opened an issue on cheap-watch
 	if (!statik && (!routes.has(path) || path == "/")) {
 		const is = await get(dir, path.slice(1))
@@ -16,8 +16,10 @@ export default async function html ({ dir, path, wsPort, statik }) {
 	if (directory) {
 		const { children } = stuff
 
-		const index = children.filter(({ directory }) => !directory).find(({ path }) => path == "index.html" || path == "index.htm")
-		if (index) return html({ dir, path: `${path}/${index.path}`.replace(/\/{2,}/g, "/"), wsPort, statik })
+		if (!listDir) {
+			const index = children.filter(({ directory }) => !directory).find(({ path }) => path == "index.html" || path == "index.htm")
+			if (index) return html({ dir, path: `${path}/${index.path}`.replace(/\/{2,}/g, "/"), wsPort, statik })
+		}
 
 		const content = doDirectory({ children, path, wsPort })
 		const headers = toHeaders({ content, type: "text/html" })

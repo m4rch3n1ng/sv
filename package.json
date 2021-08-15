@@ -1,12 +1,16 @@
 {
 	"name": "@m4rch/sv",
-	"version": "0.1.2",
+	"version": "0.1.4",
 	"description": "a simple file server with added live-reload functionality",
 	"keywords": [
 		"m4rch",
 		"serve",
 		"sv"
 	],
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/m4rch3n1ng/sv.git"
+	},
 	"license": "Unlicense",
 	"author": "m4rch",
 	"type": "module",
@@ -25,6 +29,6 @@
 		"kleur": "^4.1.4",
 		"mime": "^2.5.2",
 		"sade": "^1.7.4",
-		"ws": "^7.5.2"
+		"ws": "^8.1.0"
 	}
 }

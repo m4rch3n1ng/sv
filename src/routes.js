@@ -38,7 +38,7 @@ export function watch ( dir ) {
 	})
 }
 
-export async function get ( dir, file, a ) {
+export async function get ( dir, file ) {
 	const path = join(dir, file)
 	if (!existsSync(path)) return false
 

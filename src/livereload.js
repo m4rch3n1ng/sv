@@ -1,5 +1,4 @@
-import WebSocket from "ws"
-const { Server: WebSocketServer } = WebSocket
+import { WebSocketServer } from "ws"
 import { random } from "./utils.js"
 
 export const websockets = new Map
