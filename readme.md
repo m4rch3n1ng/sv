@@ -7,7 +7,7 @@ this is a package for file-serving with automatically added live-reload function
 ## cli
 
 ```
-$ sv -h
+$ sv --help
   Description
     quickly serve and live-reload a folder for development.
 

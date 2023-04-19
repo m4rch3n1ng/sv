@@ -6,7 +6,7 @@ import serve from "../src/index.js"
 
 export default async function handler ( folder = ".", { p, open, s, d: listDir } = {}) {
 	const dir = join(process.cwd(), folder)
-	const port = await getPort({ port: typeof p == "boolean" ? 4000 : +p })
+	const port = await getPort({ port: typeof p == "boolean" || p == undefined ? [ 4000, 3000 ] : [ +p, 4000, 3000 ] })
 	const wsPort = await getPort({ port: port + 1 })
 
 	console.clear()

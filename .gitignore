@@ -1,6 +1,5 @@
 # default
 node_modules/
 package-lock.json
-
-# testing
-/test/
+yarn.lock
+pnpm-lock.yaml

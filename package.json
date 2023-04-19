@@ -1,34 +1,33 @@
 {
 	"name": "@m4rch/sv",
-	"version": "0.1.4",
+	"version": "0.1.5",
 	"description": "a simple file server with added live-reload functionality",
+	"author": "m4rch",
+	"license": "Unlicense",
+	"main": "src/index.js",
 	"keywords": [
 		"m4rch",
 		"serve",
 		"sv"
 	],
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/m4rch3n1ng/sv.git"
-	},
-	"license": "Unlicense",
-	"author": "m4rch",
-	"type": "module",
 	"exports": {
 		".": "./src/index.js",
 		"./handler": "./bin/handler.js"
 	},
-	"main": "src/index.js",
 	"bin": {
-		"@m4rch/sv": "bin/sv.js",
 		"sv": "bin/sv.js"
 	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/m4rch3n1ng/sv.git"
+	},
 	"dependencies": {
-		"cheap-watch": "^1.0.3",
-		"get-port": "^5.1.1",
-		"kleur": "^4.1.4",
-		"mime": "^2.5.2",
-		"sade": "^1.7.4",
-		"ws": "^8.1.0"
-	}
+		"cheap-watch": "^1.0.4",
+		"get-port": "^6.1.2",
+		"kleur": "^4.1.5",
+		"mime": "^3.0.0",
+		"sade": "^1.8.1",
+		"ws": "^8.13.0"
+	},
+	"type": "module"
 }

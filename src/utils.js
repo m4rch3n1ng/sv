@@ -1,4 +1,4 @@
-import colors from "kleur"
+import * as colors from "kleur/colors"
 import { exec } from "child_process"
 import { randomBytes } from "crypto"
 
