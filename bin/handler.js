@@ -4,6 +4,11 @@ import { join } from "path"
 import { launch } from "../src/utils.js"
 import serve from "../src/index.js"
 
+/**
+ * handle server
+ * @param {string} folder directory to serve
+ * @param {{ p?: boolean | string, open?: boolean, s?: boolean, d?: boolean }} options options
+ */
 export default async function handler ( folder = ".", { p, open, s, d: listDir } = {}) {
 	const dir = join(process.cwd(), folder)
 	const port = await getPort({ port: typeof p == "boolean" || p == undefined ? [ 4000, 3000 ] : [ +p, 4000, 3000 ] })

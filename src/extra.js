@@ -1,4 +1,9 @@
 export const scripts = {
+	/**
+	 * generate code to inject for live-reload
+	 * @param {number} wsPort port for live reload websocket
+	 * @returns {string}
+	 */
 	livereload: ( wsPort ) => [
 		"<script>",
 		"\t/* code injected by sv for live-reload purposes */",

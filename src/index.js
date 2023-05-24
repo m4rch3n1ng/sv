@@ -4,18 +4,22 @@ import { init as livereload } from "./livereload.js"
 import { watch, recurse } from "./routes.js"
 import html from "./html.js"
 
+/**
+ * serve file
+ * @param {import("./private.js").ServeOptions} options options
+ */
 export default function serve ({ dir, port, wsPort, static: statik = false, listDir = false }) {
 	const server = createServer(async ( req, res ) => {
 		const { path } = parse(req)
-		const { code, content, headers } = await html({ dir, path, wsPort, statik, listDir })
+		const render = await html({ dir, path, wsPort, statik, listDir })
 
-		if (code != 404) {
-			send({ res, content, headers })
+		if (render.code != 404) {
+			send({ res, content: render.content, headers: render.headers })
 		} else {
 			is404(res)
 		}
 
-		log({ code, path })
+		log({ code: render.code, path })
 	})
 
 	if (!statik) {

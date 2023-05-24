@@ -1,6 +1,6 @@
 {
 	"name": "@m4rch/sv",
-	"version": "0.1.5",
+	"version": "0.1.6",
 	"description": "a simple file server with added live-reload functionality",
 	"author": "m4rch",
 	"license": "Unlicense",
@@ -11,8 +11,14 @@
 		"sv"
 	],
 	"exports": {
-		".": "./src/index.js",
-		"./handler": "./bin/handler.js"
+		".": {
+			"types": "./types/src/index.d.ts",
+			"import": "./src/index.js"
+		},
+		"./handler": {
+			"types": "./types/bin/handler.d.ts",
+			"import": "./bin/handler.js"
+		}
 	},
 	"bin": {
 		"sv": "bin/sv.js"
@@ -20,6 +26,10 @@
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/m4rch3n1ng/sv.git"
+	},
+	"scripts": {
+		"build": "rimraf types/ && tsc --build && copyfiles src/**/*.d.ts types/",
+		"prepare": "npm run build"
 	},
 	"dependencies": {
 		"cheap-watch": "^1.0.4",
@@ -29,5 +39,14 @@
 		"sade": "^1.8.1",
 		"ws": "^8.13.0"
 	},
+	"devDependencies": {
+		"@types/mime": "^3.0.1",
+		"@types/node": "^20.2.3",
+		"@types/ws": "^8.5.4",
+		"copyfiles": "^2.4.1",
+		"rimraf": "^5.0.1",
+		"typescript": "^5.0.4"
+	},
+	"types": "./types/src/index.d.ts",
 	"type": "module"
 }

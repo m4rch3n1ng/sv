@@ -4,8 +4,13 @@ import { existsSync } from "fs"
 import { join } from "path"
 import { update } from "./livereload.js"
 
+/** @type {Map<string, import("./private.js").Route>} */
 export const routes = new Map
 
+/**
+ * watch files
+ * @param {string} dir dir
+ */
 export function watch ( dir ) {
 	const watcher = new CheapWatch({ dir, debounce: 100 })
 	watcher.init()
@@ -13,19 +18,9 @@ export function watch ( dir ) {
 	watcher.on("+", async ({ path, stats }) => {
 		const file = join(dir, path)
 
-		if (stats.isDirectory()) {
-			let children = await readdir(file)
-			children = (await Promise.all(
-				children
-					.sort(( el1, el2 ) => el1.toLowerCase().localeCompare(el2.toLowerCase()))
-					.map(async ( path ) => ({ path, directory: (await lstat(join(file, path))).isDirectory() })).sort(( el1, el2 ) => el2.directory - el1.directory)
-			)).sort(( el1, el2 ) => el2.directory - el1.directory)
-
-			routes.set(`/${path}`, { directory: true, children })
-		} else {
-			const content = await readFile(file)
-			routes.set(`/${path}`, { directory: false, content })
-		}
+		const routeString = `/${file}`
+		const route = await getChildren(path, stats)
+		routes.set(routeString, route)
 
 		update()
 	})
@@ -38,29 +33,30 @@ export function watch ( dir ) {
 	})
 }
 
+/**
+ * 
+ * @param {string} dir directory
+ * @param {string} file file path
+ * @returns {Promise<boolean>}
+ */
 export async function get ( dir, file ) {
 	const path = join(dir, file)
 	if (!existsSync(path)) return false
 
 	const stats = await lstat(path)
-	if (stats.isDirectory()) {
-		let children = await readdir(path)
-		children = (await Promise.all(
-			children
-				.sort(( el1, el2 ) => el1.toLowerCase().localeCompare(el2.toLowerCase()))
-				.map(async ( p ) => ({ path: p, directory: (await lstat(join(path, p))).isDirectory() }))
-		)).sort(( el1, el2 ) => el2.directory - el1.directory)
 
-		routes.set(`/${file}`, { directory: true, children })
-	} else {
-		const content = await readFile(path)
-
-		routes.set(`/${file}`, { directory: false, content })
-	}
+	const routeString = `/${file}`
+	const route = await getChildren(path, stats)
+	routes.set(routeString, route)
 
 	return true
 }
 
+/**
+ * recurse directory
+ * @param {string} dir directory
+ * @param {string[]} route route
+ */
 export async function recurse ( dir, route = [] ) {
 	get(dir, route.join("/"))
 
@@ -71,7 +67,29 @@ export async function recurse ( dir, route = [] ) {
 		if (stats.isDirectory()) {
 			recurse(dir, route.concat(file))
 		} else {
-			get(dir, route.concat(file).join("/"), true)
+			get(dir, route.concat(file).join("/"))
 		}
 	})
+}
+
+/**
+ * get content
+ * @param {string} path path
+ * @param {import("node:fs").Stats} stats stats
+ * @returns {Promise<import("./private.js").Route>}
+ */
+async function getChildren ( path, stats ) {
+	if (stats.isDirectory()) {
+		let children = await readdir(path)
+		let nchildren = (await Promise.all(
+			children
+				.sort(( el1, el2 ) => el1.toLowerCase().localeCompare(el2.toLowerCase()))
+				.map(async ( p ) => ({ path: p, directory: (await lstat(join(path, p))).isDirectory() }))
+		)).sort(( el1, el2 ) => +el2.directory - +el1.directory)
+
+		return { directory: true, children: nchildren }
+	} else {
+		const content = await readFile(path)
+		return { directory: false, content }
+	}
 }

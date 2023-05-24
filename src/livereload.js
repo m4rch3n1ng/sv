@@ -1,8 +1,13 @@
 import { WebSocketServer } from "ws"
 import { random } from "./utils.js"
 
+/** @type {Map<string, import("ws").WebSocket>} */
 export const websockets = new Map
 
+/**
+ * initialize web socket
+ * @param {number} wsPort websocket port
+ */
 export function init ( wsPort ) {
 	const wss = new WebSocketServer({ port: wsPort })
 

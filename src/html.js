@@ -3,6 +3,11 @@ import { scripts, styles } from "./extra.js"
 import { routes, get } from "./routes.js"
 import { toHeaders } from "./utils.js"
 
+/**
+ * generate html
+ * @param {import("./private.js").HtmlOptions} options options 
+ * @returns {Promise<import("./private.js").HtmlResponse>}
+ */
 export default async function html ({ dir, path, wsPort, statik, listDir }) {
 	// hacky workaround, opened an issue on cheap-watch
 	if (!statik && (!routes.has(path) || path == "/")) {
@@ -12,9 +17,9 @@ export default async function html ({ dir, path, wsPort, statik, listDir }) {
 		return { code: 404 }
 	}
 
-	const { directory, ...stuff } = routes.get(path)
-	if (directory) {
-		const { children } = stuff
+	const route = /** @type {import("./private.js").Route} */ (routes.get(path))
+	if (route.directory) {
+		const { children } = route
 
 		if (!listDir) {
 			const index = children.filter(({ directory }) => !directory).find(({ path }) => path == "index.html" || path == "index.htm")
@@ -30,7 +35,7 @@ export default async function html ({ dir, path, wsPort, statik, listDir }) {
 			headers
 		}
 	} else {
-		let { content } = stuff
+		let { content } = route
 		const type = mime.getType(path) || "text/plain"
 
 		switch (type) {
@@ -57,11 +62,22 @@ export default async function html ({ dir, path, wsPort, statik, listDir }) {
 	}
 }
 
+/**
+ * inject live-reload script
+ * @param {{ content: Buffer, wsPort: number }} options options
+ * @returns {Buffer}
+ */
 function livereload ({ content, wsPort }) {
 	const script = Buffer.from(scripts.livereload(wsPort))
-	return Buffer.concat([ content, script ])
+	const contentBuffer = Buffer.from(content)
+	return Buffer.concat([ contentBuffer, script ])
 }
 
+/**
+ * generate directory html
+ * @param {{ children: { path: string, directory: boolean }[], path: string, wsPort: number }} options options 
+ * @returns {Buffer}
+ */
 function doDirectory ({ children, path, wsPort }) {
 	const dir = path.slice(1).split(/\/+/g).filter(( dir ) => !!dir.length).map(( dir, i, pre ) => ({ name: dir, link: `/${pre.slice(0, i + 1).join("/")}` }))
 	const links = children.map(({ path: p, directory }) => `<a href="${encodeURI(`/${path}/${p}`.replace(/\/+/g, "/"))}">${p}${directory ? "/" : ""}</a>`)
@@ -70,7 +86,7 @@ function doDirectory ({ children, path, wsPort }) {
 		"<!DOCTYPE html>",
 		"<html>",
 		"<head>",
-			`<title>${dir[dir.length - 1] && dir[dir.length - 1].name || "/"}</title>`,
+			`<title>${dir[dir.length - 1]?.name || "/"}</title>`,
 			scripts.livereload(wsPort),
 			styles.directory,
 		"</head>",

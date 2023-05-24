@@ -7,6 +7,14 @@ and this project adheres to [semantic versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
+## [0.1.6]
+
+### added
+
+- typescript typings via jsdoc syntax
+
+## [0.1.5]
+
 ### added
 
 - added a second port option 3000 to defaults
