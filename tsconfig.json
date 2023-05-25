@@ -27,10 +27,11 @@
 
 		/* - emit - */
 		"declaration": true,
+		"declarationMap": true,
 		"emitDeclarationOnly": true,
 		"outDir": "types",
 
-		/* - js */
+		/* - js - */
 		"allowJs": true,
 		"checkJs": true,
 
